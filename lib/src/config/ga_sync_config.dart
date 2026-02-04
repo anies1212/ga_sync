@@ -68,6 +68,8 @@ spreadsheet:
   id: "YOUR_SPREADSHEET_ID"
   # Service account credentials file
   credentials: "credentials.json"
+  # Header language: "en" (English) or "ja" (Japanese)
+  header_language: "en"
 
 events:
   # Sheet name for event definitions
@@ -106,15 +108,18 @@ routes:
 class SpreadsheetConfig {
   final String id;
   final String credentials;
+  final HeaderLanguage headerLanguage;
 
   const SpreadsheetConfig({
     required this.id,
     required this.credentials,
+    this.headerLanguage = HeaderLanguage.en,
   });
 
   factory SpreadsheetConfig._fromYaml(YamlMap yaml) {
     final id = yaml['id'] as String?;
     final credentials = yaml['credentials'] as String? ?? 'credentials.json';
+    final headerLangStr = yaml['header_language'] as String? ?? 'en';
 
     if (id == null || id.isEmpty) {
       throw const ConfigException('spreadsheet.id is required');
@@ -123,8 +128,58 @@ class SpreadsheetConfig {
     return SpreadsheetConfig(
       id: id,
       credentials: credentials,
+      headerLanguage: HeaderLanguage.fromString(headerLangStr),
     );
   }
+}
+
+/// Header language option
+enum HeaderLanguage {
+  en,
+  ja;
+
+  factory HeaderLanguage.fromString(String value) {
+    return switch (value.toLowerCase()) {
+      'ja' || 'japanese' || '日本語' => HeaderLanguage.ja,
+      _ => HeaderLanguage.en,
+    };
+  }
+
+  /// Event sheet headers
+  List<String> get eventHeaders => switch (this) {
+        HeaderLanguage.en => [
+            'event_name',
+            'parameters',
+            'parameter_types',
+            'description',
+            'category',
+          ],
+        HeaderLanguage.ja => [
+            'イベント名',
+            'パラメータ',
+            'パラメータ型',
+            '説明',
+            'カテゴリ',
+          ],
+      };
+
+  /// Route sheet headers
+  List<String> get routeHeaders => switch (this) {
+        HeaderLanguage.en => [
+            'path',
+            'name',
+            'description',
+            'screen_class',
+            'last_updated',
+          ],
+        HeaderLanguage.ja => [
+            'パス',
+            'ルート名',
+            '説明',
+            '画面クラス',
+            '最終更新',
+          ],
+      };
 }
 
 /// Events configuration

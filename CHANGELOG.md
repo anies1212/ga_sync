@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-02-04
+
+### Added
+
+- `header_language` option in config to switch between English and Japanese headers
+  - Set `header_language: "ja"` for Japanese headers
+  - Set `header_language: "en"` for English headers (default)
+- Japanese type names support for event parameters:
+  - 文字列/テキスト → String
+  - 整数/数値 → int
+  - 小数 → double
+  - 真偽値/フラグ → bool
+  - マップ/辞書 → Map
+  - リスト/配列 → List
+- Header translations:
+  - Events: イベント名, パラメータ, パラメータ型, 説明, カテゴリ
+  - Routes: パス, ルート名, 説明, 画面クラス, 最終更新
+
 ## [0.1.1] - 2026-02-04
 
 ### Added

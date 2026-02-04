@@ -43,6 +43,7 @@ class SyncCommand {
         spreadsheetId: config.spreadsheet.id,
         sheetName: config.routes.sheetName,
         routes: routes,
+        headerLanguage: config.spreadsheet.headerLanguage,
       );
 
       stdout.writeln('');

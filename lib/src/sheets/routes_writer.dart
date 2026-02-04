@@ -1,3 +1,4 @@
+import '../config/ga_sync_config.dart';
 import '../models/route_definition.dart';
 import 'sheets_client.dart';
 
@@ -12,6 +13,7 @@ class RoutesWriter {
     required String spreadsheetId,
     required String sheetName,
     required List<RouteDefinition> routes,
+    HeaderLanguage headerLanguage = HeaderLanguage.en,
   }) async {
     // Read existing data
     final existingData = await _client.readSheet(
@@ -24,7 +26,7 @@ class RoutesWriter {
 
     // Create data with header row
     final data = <List<String>>[
-      ['path', 'name', 'description', 'screen_class', 'last_updated'],
+      headerLanguage.routeHeaders,
       ...routes.map((r) => r.toRow()),
     ];
 

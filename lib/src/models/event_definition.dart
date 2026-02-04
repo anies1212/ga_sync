@@ -112,15 +112,23 @@ class EventParameter {
             .join('');
   }
 
-  /// Convert to Dart type
+  /// Convert to Dart type (supports both English and Japanese type names)
   String get dartType {
     return switch (type.toLowerCase()) {
+      // English
       'string' => 'String',
       'int' || 'integer' => 'int',
       'double' || 'float' || 'number' => 'double',
       'bool' || 'boolean' => 'bool',
       'map' => 'Map<String, dynamic>',
       'list' => 'List<dynamic>',
+      // Japanese
+      '文字列' || 'テキスト' => 'String',
+      '整数' || '数値' => 'int',
+      '小数' => 'double',
+      '真偽値' || 'フラグ' => 'bool',
+      'マップ' || '辞書' => 'Map<String, dynamic>',
+      'リスト' || '配列' => 'List<dynamic>',
       _ => 'dynamic',
     };
   }
