@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-02-05
+
+### Added
+
+- GitHub Action (composite action) を追加
+  - `command`, `credentials_base64`, `config`, `dry_run` の inputs をサポート
+  - Dart環境セットアップ、認証情報設定、ga_sync実行、クリーンアップを自動化
+
+### Changed
+
+- README に GitHub Action の使い方を追記
+  - Action Inputs のテーブルを追加
+  - Base64エンコードの方法を追記
+
 ## [0.1.5] - 2026-02-04
 
 ### Changed
