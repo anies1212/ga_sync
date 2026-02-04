@@ -1,6 +1,6 @@
-/// GA Sync - Google Analytics イベント定義同期ツール
+/// GA Sync - Google Analytics event definition sync tool
 ///
-/// スプレッドシートとコード間でGAイベント定義を双方向同期するCLIツール
+/// A CLI tool to sync GA event definitions between spreadsheets and code.
 library ga_sync;
 
 export 'src/commands/check_command.dart';

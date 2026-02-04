@@ -7,9 +7,9 @@ import '../generators/dart_generator.dart';
 import '../sheets/events_reader.dart';
 import '../sheets/sheets_client.dart';
 
-/// 差分チェックコマンド（CI用）
+/// Check command (for CI)
 class CheckCommand {
-  /// 生成コードとの差分をチェック
+  /// Check if generated code is up to date
   Future<bool> run({String? configPath}) async {
     final config = await GaSyncConfig.load(configPath);
     final client = await _createClient(config);
@@ -22,42 +22,42 @@ class CheckCommand {
       );
 
       if (events.isEmpty) {
-        stdout.writeln('イベント定義が見つかりませんでした。');
+        stdout.writeln('No event definitions found.');
         return true;
       }
 
-      // バリデーション
+      // Validation
       final errors = reader.validate(events);
       if (errors.isNotEmpty) {
-        stderr.writeln('バリデーションエラー:');
+        stderr.writeln('Validation errors:');
         for (final error in errors) {
           stderr.writeln('  - $error');
         }
         return false;
       }
 
-      // 新しいコードを生成
+      // Generate new code
       final generator = DartGenerator();
       final newCode = generator.generate(events);
 
-      // 既存ファイルと比較
+      // Compare with existing file
       final outputPath = config.events.output;
       final outputFile = File(outputPath);
 
       if (!outputFile.existsSync()) {
-        stderr.writeln('エラー: 生成ファイルが存在しません: ${p.normalize(outputPath)}');
-        stderr.writeln('ga_sync generate events を実行してください。');
+        stderr.writeln('Error: Generated file does not exist: ${p.normalize(outputPath)}');
+        stderr.writeln('Run: ga_sync generate events');
         return false;
       }
 
       final existingCode = await outputFile.readAsString();
 
       if (existingCode == newCode) {
-        stdout.writeln('✓ コードは最新です');
+        stdout.writeln('✓ Code is up to date');
         return true;
       } else {
-        stderr.writeln('エラー: 生成コードが最新ではありません');
-        stderr.writeln('ga_sync generate events を実行してコードを更新してください。');
+        stderr.writeln('Error: Generated code is out of date');
+        stderr.writeln('Run: ga_sync generate events');
         return false;
       }
     } finally {

@@ -1,4 +1,4 @@
-/// ルート定義モデル
+/// Route definition model
 class RouteDefinition {
   final String path;
   final String? name;

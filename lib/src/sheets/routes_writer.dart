@@ -1,19 +1,19 @@
 import '../models/route_definition.dart';
 import 'sheets_client.dart';
 
-/// ルート定義をスプレッドシートに書き込む
+/// Write route definitions to spreadsheet
 class RoutesWriter {
   final SheetsClient _client;
 
   const RoutesWriter(this._client);
 
-  /// ルート定義を同期
+  /// Sync route definitions
   Future<SyncResult> sync({
     required String spreadsheetId,
     required String sheetName,
     required List<RouteDefinition> routes,
   }) async {
-    // 既存のデータを読み込む
+    // Read existing data
     final existingData = await _client.readSheet(
       spreadsheetId: spreadsheetId,
       sheetName: sheetName,
@@ -22,13 +22,13 @@ class RoutesWriter {
     final existingRoutes = _parseExistingRoutes(existingData);
     final result = _calculateDiff(existingRoutes, routes);
 
-    // ヘッダー行を含むデータを作成
+    // Create data with header row
     final data = <List<String>>[
       ['path', 'name', 'description', 'screen_class', 'last_updated'],
       ...routes.map((r) => r.toRow()),
     ];
 
-    // シートをクリアして書き込み
+    // Clear and write
     await _client.clearSheet(
       spreadsheetId: spreadsheetId,
       sheetName: sheetName,
@@ -100,7 +100,7 @@ class RoutesWriter {
   }
 }
 
-/// 同期結果
+/// Sync result
 class SyncResult {
   final List<RouteDefinition> added;
   final List<RouteDefinition> removed;

@@ -7,16 +7,16 @@ import 'package:analyzer/dart/ast/visitor.dart';
 
 import '../models/route_definition.dart';
 
-/// go_routerのルート定義をパースする
+/// Parse go_router route definitions
 class GoRouterParser {
-  /// ソースファイルからルート定義を抽出
+  /// Extract route definitions from source files
   Future<List<RouteDefinition>> parse(List<String> sourcePaths) async {
     final routes = <RouteDefinition>[];
 
     for (final path in sourcePaths) {
       final file = File(path);
       if (!file.existsSync()) {
-        throw ParserException('ファイルが見つかりません: $path');
+        throw ParserException('File not found: $path');
       }
 
       final content = await file.readAsString();
@@ -70,7 +70,7 @@ class _GoRouteVisitor extends RecursiveAstVisitor<void> {
     String? description;
     String? screenClass;
 
-    // @ga_description コメントを探す
+    // Look for @ga_description comment
     final precedingComments = _findPrecedingComment(node);
     if (precedingComments != null) {
       final descMatch = RegExp(r'@ga_description:\s*(.+)').firstMatch(precedingComments);
@@ -127,7 +127,7 @@ class _GoRouteVisitor extends RecursiveAstVisitor<void> {
       if (body is ExpressionFunctionBody) {
         return _extractScreenFromExpression(body.expression);
       } else if (body is BlockFunctionBody) {
-        // return文を探す
+        // Look for return statement
         final visitor = _ReturnStatementVisitor();
         body.visitChildren(visitor);
         if (visitor.returnExpression != null) {
@@ -174,7 +174,7 @@ class _ReturnStatementVisitor extends RecursiveAstVisitor<void> {
   }
 }
 
-/// パーサー例外
+/// Parser exception
 class ParserException implements Exception {
   final String message;
 

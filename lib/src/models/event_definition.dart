@@ -1,4 +1,4 @@
-/// GAイベント定義モデル
+/// GA event definition model
 class EventDefinition {
   final String eventName;
   final List<EventParameter> parameters;
@@ -12,7 +12,7 @@ class EventDefinition {
     this.category,
   });
 
-  /// snake_case -> PascalCase 変換
+  /// Convert snake_case to PascalCase
   String get className {
     return eventName
         .split('_')
@@ -22,7 +22,7 @@ class EventDefinition {
         .join('');
   }
 
-  /// snake_case -> camelCase 変換
+  /// Convert snake_case to camelCase
   String get enumValue {
     final parts = eventName.split('_');
     if (parts.isEmpty) return eventName;
@@ -77,7 +77,7 @@ class EventDefinition {
   }
 }
 
-/// イベントパラメータモデル
+/// Event parameter model
 class EventParameter {
   final String name;
   final String type;
@@ -89,7 +89,7 @@ class EventParameter {
     this.isRequired = true,
   });
 
-  /// snake_case -> camelCase 変換
+  /// Convert snake_case to camelCase
   String get fieldName {
     final parts = name.split('_');
     if (parts.isEmpty) return name;
@@ -102,7 +102,7 @@ class EventParameter {
             .join('');
   }
 
-  /// Dart型に変換
+  /// Convert to Dart type
   String get dartType {
     return switch (type.toLowerCase()) {
       'string' => 'String',

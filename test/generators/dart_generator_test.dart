@@ -10,15 +10,15 @@ void main() {
       generator = DartGenerator();
     });
 
-    test('空のイベントリストでも生成できる', () {
+    test('generates with empty event list', () {
       final code = generator.generate([]);
 
-      // 空のリストの場合、enumは生成されない（Dartでは空enumは不正）
+      // Empty list should not generate enum (invalid Dart)
       expect(code, isNot(contains('enum GaEventName')));
       expect(code, contains('GENERATED CODE'));
     });
 
-    test('イベントクラスが正しく生成される', () {
+    test('generates event class correctly', () {
       final events = [
         EventDefinition(
           eventName: 'button_click',
@@ -26,7 +26,7 @@ void main() {
             EventParameter(name: 'button_id', type: 'string'),
             EventParameter(name: 'screen_name', type: 'string'),
           ],
-          description: 'ボタンクリック時',
+          description: 'When button clicked',
         ),
       ];
 
@@ -39,7 +39,7 @@ void main() {
       expect(code, contains("'screen_name': screenName"));
     });
 
-    test('enumが正しく生成される', () {
+    test('generates enum correctly', () {
       final events = [
         EventDefinition(eventName: 'event_one', parameters: []),
         EventDefinition(eventName: 'event_two', parameters: []),
@@ -52,7 +52,7 @@ void main() {
       expect(code, contains('eventTwo'));
     });
 
-    test('拡張メソッドが正しく生成される', () {
+    test('generates extension methods correctly', () {
       final events = [
         EventDefinition(eventName: 'test_event', parameters: []),
       ];
@@ -63,7 +63,7 @@ void main() {
       expect(code, contains("GaEventName.testEvent => 'test_event'"));
     });
 
-    test('複数パラメータ型が正しく生成される', () {
+    test('generates multiple parameter types correctly', () {
       final events = [
         EventDefinition(
           eventName: 'complex_event',

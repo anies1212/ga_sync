@@ -1,41 +1,41 @@
 # GA Sync
 
-Google Analytics のイベント定義とページパスを、スプレッドシートとコード間で双方向同期するCLIツール。
+A CLI tool to sync Google Analytics event definitions and page paths between spreadsheets and code.
 
-## 機能
+## Features
 
-- **Events Generator** (Spreadsheet → Code): スプレッドシートのイベント定義からDartコードを自動生成
-- **Routes Syncer** (Code → Spreadsheet): go_routerのルート定義をスプレッドシートに同期
+- **Events Generator** (Spreadsheet → Code): Auto-generate Dart code from spreadsheet event definitions
+- **Routes Syncer** (Code → Spreadsheet): Sync go_router route definitions to spreadsheet
 
-## インストール
+## Installation
 
 ```bash
 dart pub global activate ga_sync
 ```
 
-または `pubspec.yaml` に追加:
+Or add to `pubspec.yaml`:
 
 ```yaml
 dev_dependencies:
   ga_sync: ^0.1.0
 ```
 
-## セットアップ
+## Setup
 
-### 1. Google Cloud設定
+### 1. Google Cloud Configuration
 
-1. [Google Cloud Console](https://console.cloud.google.com/)でプロジェクトを作成
-2. Google Sheets APIを有効化
-3. サービスアカウントを作成し、JSONキーをダウンロード
-4. スプレッドシートをサービスアカウントのメールアドレスと共有
+1. Create a project in [Google Cloud Console](https://console.cloud.google.com/)
+2. Enable Google Sheets API
+3. Create a service account and download JSON key
+4. Share the spreadsheet with the service account email
 
-### 2. 初期化
+### 2. Initialize
 
 ```bash
 ga_sync init
 ```
 
-`ga_sync.yaml` が作成されます:
+This creates `ga_sync.yaml`:
 
 ```yaml
 version: 1
@@ -56,24 +56,24 @@ routes:
   parser: go_router
 ```
 
-## 使い方
+## Usage
 
-### イベントコード生成
+### Generate Event Code
 
-スプレッドシートの「Events」シートからDartコードを生成:
+Generate Dart code from the "Events" sheet:
 
 ```bash
 ga_sync generate events
 ```
 
-**スプレッドシート形式:**
+**Spreadsheet format:**
 
 | event_name | parameters | param_types | description | category |
 |------------|------------|-------------|-------------|----------|
-| point_earned | cv_id,source_screen | string,string | ポイント獲得時 | conversion |
-| button_click | button_id,screen_name | string,string | ボタンクリック時 | interaction |
+| point_earned | cv_id,source_screen | string,string | When points earned | conversion |
+| button_click | button_id,screen_name | string,string | When button clicked | interaction |
 
-**生成されるコード:**
+**Generated code:**
 
 ```dart
 // lib/analytics/ga_events.g.dart
@@ -98,60 +98,60 @@ class PointEarnedEvent {
 }
 ```
 
-### ルート同期
+### Sync Routes
 
-go_routerのルート定義をスプレッドシートに同期:
+Sync go_router route definitions to spreadsheet:
 
 ```bash
 ga_sync sync routes
 ```
 
-**解析対象のコード:**
+**Source code:**
 
 ```dart
 GoRoute(
   path: '/home',
   name: 'home',
-  // @ga_description: ホーム画面
+  // @ga_description: Home screen
   builder: (context, state) => const HomeScreen(),
 ),
 ```
 
-**スプレッドシートに出力:**
+**Spreadsheet output:**
 
 | path | name | description | screen_class | last_updated |
 |------|------|-------------|--------------|--------------|
-| /home | home | ホーム画面 | HomeScreen | 2024-02-04 |
+| /home | home | Home screen | HomeScreen | 2024-02-04 |
 
-### CI用チェック
+### CI Check
 
-生成コードが最新かチェック（CIで使用）:
+Check if generated code is up to date (for CI):
 
 ```bash
 ga_sync check
 ```
 
-差分がある場合は終了コード1を返します。
+Returns exit code 1 if there are differences.
 
-## コマンド一覧
+## Commands
 
-| コマンド | 説明 |
-|---------|------|
-| `ga_sync init` | 設定ファイルを作成 |
-| `ga_sync generate events` | イベントコードを生成 |
-| `ga_sync sync routes` | ルートをスプレッドシートに同期 |
-| `ga_sync sync all` | generate events と sync routes を両方実行 |
-| `ga_sync check` | 生成コードが最新かチェック |
+| Command | Description |
+|---------|-------------|
+| `ga_sync init` | Create config file |
+| `ga_sync generate events` | Generate event code |
+| `ga_sync sync routes` | Sync routes to spreadsheet |
+| `ga_sync sync all` | Run both generate events and sync routes |
+| `ga_sync check` | Check if generated code is up to date |
 
-**オプション:**
+**Options:**
 
-- `--dry-run, -d`: 実際には実行せず、プレビューのみ
-- `--config, -c`: 設定ファイルのパスを指定
-- `--force, -f`: 既存ファイルを上書き（init時）
+- `--dry-run, -d`: Preview only, don't execute
+- `--config, -c`: Specify config file path
+- `--force, -f`: Overwrite existing files (for init)
 
-## 環境変数
+## Environment Variables
 
-CI/CDでは環境変数で認証情報を指定:
+For CI/CD, specify credentials via environment variable:
 
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS="path/to/service-account.json"
@@ -160,70 +160,40 @@ ga_sync generate events
 
 ## GitHub Actions
 
-### セットアップ
+### Quick Start
 
-1. **GitHub Secretsを設定**
-   - `Settings > Secrets and variables > Actions` を開く
-   - `GOOGLE_CREDENTIALS` を追加（サービスアカウントJSONキーの内容）
+1. **Add GitHub Secret**
+   - Go to `Settings > Secrets and variables > Actions`
+   - Add `GOOGLE_CREDENTIALS` with your service account JSON key content
 
-2. **ワークフローファイルをコピー**
-   - `example/github-actions/ga-sync.yaml` を `.github/workflows/` にコピー
+2. **Copy workflow file**
+   ```bash
+   cp example/github-actions/ga-sync.yaml .github/workflows/
+   ```
 
-### 基本的なワークフロー（同期チェック）
+3. **Enable workflow permissions**
+   - Go to `Settings > Actions > General > Workflow permissions`
+   - Select "Read and write permissions"
 
-```yaml
-name: GA Sync Check
+### How it works
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+1. Trigger the workflow (manually via workflow_dispatch, or on schedule)
+2. ga_sync generates event definitions from spreadsheet
+3. If there are changes, a PR is automatically created
 
-jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dart-lang/setup-dart@v1
-        with:
-          sdk: stable
-
-      - name: Install ga_sync
-        run: dart pub global activate ga_sync
-
-      - name: Setup credentials
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-        run: echo "$GOOGLE_CREDENTIALS" > credentials.json
-
-      - name: Check events sync
-        run: ga_sync check
-
-      - name: Cleanup
-        if: always()
-        run: rm -f credentials.json
-```
-
-### 自動PRワークフロー
-
-スプレッドシートが更新されたら自動でPRを作成:
+### Example workflow
 
 ```yaml
-name: GA Sync Auto Update
+name: GA Sync
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # 毎日9時 JST
   workflow_dispatch:
 
 jobs:
-  update:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: dart-lang/setup-dart@v1
 
       - run: dart pub global activate ga_sync
@@ -234,22 +204,17 @@ jobs:
         run: echo "$GOOGLE_CREDENTIALS" > credentials.json
 
       - run: ga_sync generate events
-
       - run: rm -f credentials.json
 
       - uses: peter-evans/create-pull-request@v7
         with:
-          commit-message: 'chore: GAイベント定義を更新'
-          title: 'chore: GAイベント定義を更新'
+          commit-message: 'chore: update GA event definitions'
+          title: 'chore: update GA event definitions'
           branch: ga-sync/update-events
 ```
 
-### 必要なPermissions
+See `example/github-actions/ga-sync.yaml` for the full example.
 
-GitHub Actionsで自動PRを作成する場合、リポジトリ設定で以下を有効化:
-- `Settings > Actions > General > Workflow permissions`
-- `Read and write permissions` を選択
-
-## ライセンス
+## License
 
 MIT License

@@ -1,13 +1,13 @@
 import '../models/event_definition.dart';
 import 'sheets_client.dart';
 
-/// イベント定義をスプレッドシートから読み込む
+/// Read event definitions from spreadsheet
 class EventsReader {
   final SheetsClient _client;
 
   const EventsReader(this._client);
 
-  /// イベント定義を読み込む
+  /// Read event definitions
   Future<List<EventDefinition>> read({
     required String spreadsheetId,
     required String sheetName,
@@ -21,18 +21,18 @@ class EventsReader {
       return [];
     }
 
-    // ヘッダー行をスキップ
+    // Skip header row
     final rows = data.skip(1).where((row) => row.isNotEmpty && row[0].isNotEmpty);
 
     final events = <EventDefinition>[];
-    var rowIndex = 2; // 1-indexed, ヘッダー行の次から
+    var rowIndex = 2; // 1-indexed, starting after header
 
     for (final row in rows) {
       try {
         events.add(EventDefinition.fromRow(row));
       } catch (e) {
         throw EventsReaderException(
-          '行 $rowIndex でエラー: $e',
+          'Error at row $rowIndex: $e',
           rowIndex: rowIndex,
         );
       }
@@ -42,38 +42,38 @@ class EventsReader {
     return events;
   }
 
-  /// イベント定義をバリデーション
+  /// Validate event definitions
   List<ValidationError> validate(List<EventDefinition> events) {
     final errors = <ValidationError>[];
     final seenNames = <String>{};
 
     for (var i = 0; i < events.length; i++) {
       final event = events[i];
-      final rowIndex = i + 2; // ヘッダー行を考慮
+      final rowIndex = i + 2; // Account for header row
 
-      // イベント名の重複チェック
+      // Check for duplicate event names
       if (seenNames.contains(event.eventName)) {
         errors.add(ValidationError(
           rowIndex: rowIndex,
-          message: 'イベント名が重複しています: ${event.eventName}',
+          message: 'Duplicate event name: ${event.eventName}',
         ));
       }
       seenNames.add(event.eventName);
 
-      // イベント名の形式チェック
+      // Check event name format
       if (!_isValidSnakeCase(event.eventName)) {
         errors.add(ValidationError(
           rowIndex: rowIndex,
-          message: 'イベント名はsnake_caseで記述してください: ${event.eventName}',
+          message: 'Event name must be snake_case: ${event.eventName}',
         ));
       }
 
-      // パラメータ名の形式チェック
+      // Check parameter name format
       for (final param in event.parameters) {
         if (!_isValidSnakeCase(param.name)) {
           errors.add(ValidationError(
             rowIndex: rowIndex,
-            message: 'パラメータ名はsnake_caseで記述してください: ${param.name}',
+            message: 'Parameter name must be snake_case: ${param.name}',
           ));
         }
       }
@@ -87,7 +87,7 @@ class EventsReader {
   }
 }
 
-/// イベント読み込み例外
+/// Events reader exception
 class EventsReaderException implements Exception {
   final String message;
   final int rowIndex;
@@ -98,7 +98,7 @@ class EventsReaderException implements Exception {
   String toString() => 'EventsReaderException: $message (row: $rowIndex)';
 }
 
-/// バリデーションエラー
+/// Validation error
 class ValidationError {
   final int rowIndex;
   final String message;
@@ -109,5 +109,5 @@ class ValidationError {
   });
 
   @override
-  String toString() => '行 $rowIndex: $message';
+  String toString() => 'Row $rowIndex: $message';
 }

@@ -3,17 +3,17 @@ import 'package:dart_style/dart_style.dart';
 
 import '../models/event_definition.dart';
 
-/// Dartコード生成器
+/// Dart code generator
 class DartGenerator {
   final DartFormatter _formatter = DartFormatter();
 
-  /// イベント定義からDartコードを生成
+  /// Generate Dart code from event definitions
   String generate(List<EventDefinition> events) {
     final specs = <Spec>[
       _buildFileHeader(),
     ];
 
-    // イベントがある場合のみenumと拡張を生成
+    // Only generate enum and extension if there are events
     if (events.isNotEmpty) {
       specs.add(_buildEventNameEnum(events));
       specs.addAll(events.map(_buildEventClass));
@@ -46,7 +46,7 @@ class DartGenerator {
     return Enum((b) {
       b
         ..name = 'GaEventName'
-        ..docs.add('/// GAイベント名の列挙型')
+        ..docs.add('/// GA event name enum')
         ..values.addAll(
           events.map((e) => EnumValue((v) {
                 v.name = e.enumValue;
@@ -62,9 +62,9 @@ class DartGenerator {
     return Class((b) {
       b
         ..name = '${event.className}Event'
-        ..docs.add('/// ${event.description ?? event.eventName} イベント');
+        ..docs.add('/// ${event.description ?? event.eventName} event');
 
-      // フィールド
+      // Fields
       for (final param in event.parameters) {
         b.fields.add(Field((f) {
           f
@@ -74,7 +74,7 @@ class DartGenerator {
         }));
       }
 
-      // コンストラクタ
+      // Constructor
       b.constructors.add(Constructor((c) {
         c.constant = true;
         for (final param in event.parameters) {
@@ -88,7 +88,7 @@ class DartGenerator {
         }
       }));
 
-      // イベント名プロパティ
+      // Event name property
       b.methods.add(Method((m) {
         m
           ..name = 'eventName'
@@ -98,7 +98,7 @@ class DartGenerator {
           ..body = Code("'${event.eventName}'");
       }));
 
-      // toParametersメソッド
+      // toParameters method
       b.methods.add(Method((m) {
         m
           ..name = 'toParameters'
@@ -127,9 +127,9 @@ class DartGenerator {
       b
         ..name = 'GaEventExtensions'
         ..on = Reference('GaEventName')
-        ..docs.add('/// GaEventNameの拡張メソッド');
+        ..docs.add('/// GaEventName extension methods');
 
-      // rawNameプロパティ
+      // rawName property
       b.methods.add(Method((m) {
         m
           ..name = 'rawName'

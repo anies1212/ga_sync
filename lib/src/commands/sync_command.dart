@@ -5,36 +5,36 @@ import '../parsers/go_router_parser.dart';
 import '../sheets/routes_writer.dart';
 import '../sheets/sheets_client.dart';
 
-/// ルート同期コマンド
+/// Sync routes command
 class SyncCommand {
-  /// ルートをスプレッドシートに同期
+  /// Sync routes to spreadsheet
   Future<void> run({
     String? configPath,
     bool dryRun = false,
   }) async {
     final config = await GaSyncConfig.load(configPath);
 
-    // ルートをパース
+    // Parse routes
     final parser = _createParser(config.routes.parser);
     final routes = await parser.parse(config.routes.source);
 
     if (routes.isEmpty) {
-      stdout.writeln('ルート定義が見つかりませんでした。');
+      stdout.writeln('No route definitions found.');
       return;
     }
 
-    stdout.writeln('${routes.length} 件のルートを検出しました:');
+    stdout.writeln('Found ${routes.length} routes:');
     for (final route in routes) {
       stdout.writeln('  - ${route.path} (${route.screenClass ?? "unknown"})');
     }
 
     if (dryRun) {
       stdout.writeln('');
-      stdout.writeln('(ドライラン: 実際の同期は行われません)');
+      stdout.writeln('(Dry run: no actual sync performed)');
       return;
     }
 
-    // スプレッドシートに同期
+    // Sync to spreadsheet
     final client = await _createClient(config);
 
     try {
@@ -46,23 +46,23 @@ class SyncCommand {
       );
 
       stdout.writeln('');
-      stdout.writeln('✓ ルートを同期しました');
+      stdout.writeln('✓ Routes synced');
 
       if (result.hasChanges) {
         if (result.added.isNotEmpty) {
-          stdout.writeln('  追加: ${result.added.length} 件');
+          stdout.writeln('  Added: ${result.added.length}');
           for (final route in result.added) {
             stdout.writeln('    + ${route.path}');
           }
         }
         if (result.removed.isNotEmpty) {
-          stdout.writeln('  削除: ${result.removed.length} 件');
+          stdout.writeln('  Removed: ${result.removed.length}');
           for (final route in result.removed) {
             stdout.writeln('    - ${route.path}');
           }
         }
       } else {
-        stdout.writeln('  変更なし');
+        stdout.writeln('  No changes');
       }
     } finally {
       client.close();
@@ -72,7 +72,7 @@ class SyncCommand {
   GoRouterParser _createParser(String parserName) {
     return switch (parserName) {
       'go_router' => GoRouterParser(),
-      _ => throw SyncException('未対応のパーサー: $parserName'),
+      _ => throw SyncException('Unsupported parser: $parserName'),
     };
   }
 
@@ -84,7 +84,7 @@ class SyncCommand {
   }
 }
 
-/// 同期例外
+/// Sync exception
 class SyncException implements Exception {
   final String message;
 

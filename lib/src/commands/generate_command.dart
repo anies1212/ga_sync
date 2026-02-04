@@ -7,9 +7,9 @@ import '../generators/dart_generator.dart';
 import '../sheets/events_reader.dart';
 import '../sheets/sheets_client.dart';
 
-/// イベントコード生成コマンド
+/// Generate events command
 class GenerateCommand {
-  /// イベントコードを生成
+  /// Generate event code
   Future<void> run({
     String? configPath,
     bool dryRun = false,
@@ -25,39 +25,39 @@ class GenerateCommand {
       );
 
       if (events.isEmpty) {
-        stdout.writeln('イベント定義が見つかりませんでした。');
+        stdout.writeln('No event definitions found.');
         return;
       }
 
-      // バリデーション
+      // Validation
       final errors = reader.validate(events);
       if (errors.isNotEmpty) {
-        stderr.writeln('バリデーションエラー:');
+        stderr.writeln('Validation errors:');
         for (final error in errors) {
           stderr.writeln('  - $error');
         }
-        throw GenerateException('バリデーションに失敗しました');
+        throw GenerateException('Validation failed');
       }
 
-      // コード生成
+      // Code generation
       final generator = DartGenerator();
       final code = generator.generate(events);
 
       if (dryRun) {
-        stdout.writeln('--- 生成されるコード ---');
+        stdout.writeln('--- Generated code ---');
         stdout.writeln(code);
-        stdout.writeln('--- ここまで ---');
+        stdout.writeln('--- End ---');
         stdout.writeln('');
-        stdout.writeln('${events.length} 件のイベントが生成されます。');
-        stdout.writeln('出力先: ${config.events.output}');
+        stdout.writeln('${events.length} events will be generated.');
+        stdout.writeln('Output: ${config.events.output}');
         return;
       }
 
-      // ファイルに書き込み
+      // Write to file
       final outputPath = config.events.output;
       final outputFile = File(outputPath);
 
-      // ディレクトリを作成
+      // Create directory
       final dir = outputFile.parent;
       if (!dir.existsSync()) {
         await dir.create(recursive: true);
@@ -65,25 +65,25 @@ class GenerateCommand {
 
       await outputFile.writeAsString(code);
 
-      stdout.writeln('✓ ${events.length} 件のイベント定義を生成しました');
-      stdout.writeln('  出力先: ${p.normalize(outputPath)}');
+      stdout.writeln('✓ Generated ${events.length} event definitions');
+      stdout.writeln('  Output: ${p.normalize(outputPath)}');
     } finally {
       client.close();
     }
   }
 
   Future<SheetsClient> _createClient(GaSyncConfig config) async {
-    // 環境変数を優先
+    // Prefer environment variable
     if (Platform.environment.containsKey('GOOGLE_APPLICATION_CREDENTIALS')) {
       return SheetsClient.fromEnvironment();
     }
 
-    // 設定ファイルの認証情報を使用
+    // Use config credentials
     return SheetsClient.fromServiceAccount(config.spreadsheet.credentials);
   }
 }
 
-/// 生成例外
+/// Generate exception
 class GenerateException implements Exception {
   final String message;
 

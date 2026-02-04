@@ -2,34 +2,34 @@ import 'dart:io';
 
 import '../config/ga_sync_config.dart';
 
-/// 初期化コマンド
+/// Init command
 class InitCommand {
-  /// 設定ファイルを作成
+  /// Create config file
   Future<void> run({bool force = false}) async {
     const configPath = 'ga_sync.yaml';
     final file = File(configPath);
 
     if (file.existsSync() && !force) {
       throw InitException(
-        '設定ファイルが既に存在します: $configPath\n'
-        '上書きする場合は --force オプションを使用してください。',
+        'Config file already exists: $configPath\n'
+        'Use --force option to overwrite.',
       );
     }
 
     final content = GaSyncConfig.generateDefault();
     await file.writeAsString(content);
 
-    stdout.writeln('✓ 設定ファイルを作成しました: $configPath');
+    stdout.writeln('✓ Created config file: $configPath');
     stdout.writeln('');
-    stdout.writeln('次のステップ:');
-    stdout.writeln('1. Google Cloud ConsoleでサービスアカウントをつくりJSONキーを取得');
-    stdout.writeln('2. credentials.json をプロジェクトルートに配置');
-    stdout.writeln('3. ga_sync.yaml の spreadsheet.id を設定');
-    stdout.writeln('4. ga_sync generate events を実行');
+    stdout.writeln('Next steps:');
+    stdout.writeln('1. Create a service account in Google Cloud Console and download JSON key');
+    stdout.writeln('2. Place credentials.json in project root');
+    stdout.writeln('3. Set spreadsheet.id in ga_sync.yaml');
+    stdout.writeln('4. Run: ga_sync generate events');
   }
 }
 
-/// 初期化例外
+/// Init exception
 class InitException implements Exception {
   final String message;
 

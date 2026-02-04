@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 
-/// GA Sync設定クラス
+/// GA Sync configuration
 class GaSyncConfig {
   final int version;
   final SpreadsheetConfig spreadsheet;
@@ -17,16 +17,16 @@ class GaSyncConfig {
     required this.routes,
   });
 
-  /// 設定ファイルを読み込む
+  /// Load config file
   static Future<GaSyncConfig> load([String? configPath]) async {
     final path = configPath ?? _findConfigFile();
     if (path == null) {
-      throw ConfigException('設定ファイルが見つかりません。ga_sync init を実行してください。');
+      throw ConfigException('Config file not found. Run: ga_sync init');
     }
 
     final file = File(path);
     if (!file.existsSync()) {
-      throw ConfigException('設定ファイルが存在しません: $path');
+      throw ConfigException('Config file does not exist: $path');
     }
 
     final content = await file.readAsString();
@@ -42,7 +42,7 @@ class GaSyncConfig {
     final routesYaml = yaml['routes'] as YamlMap?;
 
     if (spreadsheetYaml == null) {
-      throw ConfigException('spreadsheet設定が必要です');
+      throw ConfigException('spreadsheet config is required');
     }
 
     return GaSyncConfig(
@@ -57,33 +57,33 @@ class GaSyncConfig {
     );
   }
 
-  /// デフォルト設定ファイルの内容を生成
+  /// Generate default config file content
   static String generateDefault() {
     return '''
-# GA Sync設定ファイル
+# GA Sync configuration
 version: 1
 
 spreadsheet:
-  # Google SpreadsheetのID（URLから取得）
+  # Google Spreadsheet ID (from URL)
   id: "YOUR_SPREADSHEET_ID"
-  # サービスアカウントの認証情報ファイル
+  # Service account credentials file
   credentials: "credentials.json"
 
 events:
-  # イベント定義のシート名
+  # Sheet name for event definitions
   sheet_name: "Events"
-  # 生成するコードの出力先
+  # Output file path
   output: "lib/analytics/ga_events.g.dart"
-  # 出力言語
+  # Output language
   language: dart
 
 routes:
-  # ルート定義のシート名
+  # Sheet name for route definitions
   sheet_name: "Routes"
-  # 解析対象のソースファイル
+  # Source files to parse
   source:
     - "lib/router/app_router.dart"
-  # 使用するルーターライブラリ
+  # Router library parser
   parser: go_router
 ''';
   }
@@ -102,7 +102,7 @@ routes:
   }
 }
 
-/// スプレッドシート設定
+/// Spreadsheet configuration
 class SpreadsheetConfig {
   final String id;
   final String credentials;
@@ -117,7 +117,7 @@ class SpreadsheetConfig {
     final credentials = yaml['credentials'] as String? ?? 'credentials.json';
 
     if (id == null || id.isEmpty) {
-      throw ConfigException('spreadsheet.id が必要です');
+      throw ConfigException('spreadsheet.id is required');
     }
 
     return SpreadsheetConfig(
@@ -127,7 +127,7 @@ class SpreadsheetConfig {
   }
 }
 
-/// イベント設定
+/// Events configuration
 class EventsConfig {
   final String sheetName;
   final String output;
@@ -148,7 +148,7 @@ class EventsConfig {
   }
 }
 
-/// ルート設定
+/// Routes configuration
 class RoutesConfig {
   final String sheetName;
   final List<String> source;
@@ -180,7 +180,7 @@ class RoutesConfig {
   }
 }
 
-/// 設定エラー
+/// Config exception
 class ConfigException implements Exception {
   final String message;
 

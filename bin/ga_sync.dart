@@ -38,11 +38,11 @@ void main(List<String> arguments) async {
 
     await _runCommand(results);
   } on FormatException catch (e) {
-    stderr.writeln('エラー: ${e.message}');
+    stderr.writeln('Error: ${e.message}');
     _printUsage(parser);
     exitCode = 1;
   } catch (e) {
-    stderr.writeln('エラー: $e');
+    stderr.writeln('Error: $e');
     exitCode = 1;
   }
 }
@@ -60,7 +60,7 @@ Future<void> _runCommand(ArgResults results) async {
     case 'generate':
       final subCommand = command.command;
       if (subCommand == null || subCommand.name != 'events') {
-        stderr.writeln('使用法: ga_sync generate events [--dry-run]');
+        stderr.writeln('Usage: ga_sync generate events [--dry-run]');
         exitCode = 1;
         return;
       }
@@ -73,7 +73,7 @@ Future<void> _runCommand(ArgResults results) async {
     case 'sync':
       final subCommand = command.command;
       if (subCommand == null) {
-        stderr.writeln('使用法: ga_sync sync <routes|all> [--dry-run]');
+        stderr.writeln('Usage: ga_sync sync <routes|all> [--dry-run]');
         exitCode = 1;
         return;
       }
@@ -111,43 +111,43 @@ Future<void> _runCommand(ArgResults results) async {
       break;
 
     default:
-      stderr.writeln('不明なコマンド: ${command.name}');
+      stderr.writeln('Unknown command: ${command.name}');
       exitCode = 1;
   }
 }
 
 void _printUsage(ArgParser parser) {
   stdout.writeln('''
-ga_sync - Google Analytics イベント定義同期ツール
+ga_sync - Google Analytics event definition sync tool
 
-使用法: ga_sync <command> [options]
+Usage: ga_sync <command> [options]
 
-コマンド:
-  init                    設定ファイル (ga_sync.yaml) を作成
-    -f, --force           既存ファイルを上書き
+Commands:
+  init                    Create config file (ga_sync.yaml)
+    -f, --force           Overwrite existing file
 
-  generate events         イベント定義からコードを生成 (Spreadsheet → Code)
-    -d, --dry-run         実際には生成せず、プレビューのみ
-    -c, --config          設定ファイルのパス
+  generate events         Generate code from event definitions (Spreadsheet -> Code)
+    -d, --dry-run         Preview only, don't generate
+    -c, --config          Config file path
 
-  sync routes             ルート定義をスプレッドシートに同期 (Code → Spreadsheet)
-    -d, --dry-run         実際には同期せず、プレビューのみ
-    -c, --config          設定ファイルのパス
+  sync routes             Sync route definitions to spreadsheet (Code -> Spreadsheet)
+    -d, --dry-run         Preview only, don't sync
+    -c, --config          Config file path
 
-  sync all                generate events と sync routes を両方実行
+  sync all                Run both generate events and sync routes
 
-  check                   生成コードが最新かチェック (CI用)
-    -c, --config          設定ファイルのパス
+  check                   Check if generated code is up to date (for CI)
+    -c, --config          Config file path
 
-オプション:
-  -h, --help              ヘルプを表示
-  -v, --version           バージョンを表示
+Options:
+  -h, --help              Show help
+  -v, --version           Show version
 
-例:
-  ga_sync init                      # 設定ファイルを作成
-  ga_sync generate events           # イベントコードを生成
-  ga_sync generate events --dry-run # プレビューのみ
-  ga_sync sync routes               # ルートを同期
-  ga_sync check                     # CI用差分チェック
+Examples:
+  ga_sync init                      # Create config file
+  ga_sync generate events           # Generate event code
+  ga_sync generate events --dry-run # Preview only
+  ga_sync sync routes               # Sync routes
+  ga_sync check                     # Check for CI
 ''');
 }

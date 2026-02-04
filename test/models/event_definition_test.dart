@@ -3,12 +3,12 @@ import 'package:test/test.dart';
 
 void main() {
   group('EventDefinition', () {
-    test('fromRowで正しくパースできる', () {
+    test('fromRow parses correctly', () {
       final row = [
         'point_earned',
         'cv_id,cv_type,source_screen',
         'string,string,string',
-        'ポイント獲得時',
+        'When points earned',
         'conversion',
       ];
 
@@ -16,11 +16,11 @@ void main() {
 
       expect(event.eventName, 'point_earned');
       expect(event.parameters.length, 3);
-      expect(event.description, 'ポイント獲得時');
+      expect(event.description, 'When points earned');
       expect(event.category, 'conversion');
     });
 
-    test('classNameがPascalCaseに変換される', () {
+    test('className converts to PascalCase', () {
       final event = EventDefinition(
         eventName: 'point_earned',
         parameters: [],
@@ -29,7 +29,7 @@ void main() {
       expect(event.className, 'PointEarned');
     });
 
-    test('enumValueがcamelCaseに変換される', () {
+    test('enumValue converts to camelCase', () {
       final event = EventDefinition(
         eventName: 'button_click',
         parameters: [],
@@ -38,12 +38,12 @@ void main() {
       expect(event.enumValue, 'buttonClick');
     });
 
-    test('パラメータ数不一致でエラー', () {
+    test('throws on parameter count mismatch', () {
       final row = [
         'test_event',
         'param1,param2',
         'string',
-        'テスト',
+        'test',
       ];
 
       expect(
@@ -52,7 +52,7 @@ void main() {
       );
     });
 
-    test('不正な行でエラー', () {
+    test('throws on invalid row', () {
       final row = ['event_name', 'params'];
 
       expect(
@@ -63,13 +63,13 @@ void main() {
   });
 
   group('EventParameter', () {
-    test('fieldNameがcamelCaseに変換される', () {
+    test('fieldName converts to camelCase', () {
       final param = EventParameter(name: 'source_screen', type: 'string');
 
       expect(param.fieldName, 'sourceScreen');
     });
 
-    test('dartTypeが正しく変換される', () {
+    test('dartType converts correctly', () {
       expect(
         EventParameter(name: 'a', type: 'string').dartType,
         'String',
