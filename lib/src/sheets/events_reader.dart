@@ -174,9 +174,10 @@ class EventsReader {
       }
     } else {
       // New format: paired parameter/type columns
-      final maxPairs = columnMap.parameterCols.length < columnMap.typeCols.length
-          ? columnMap.parameterCols.length
-          : columnMap.typeCols.length;
+      final maxPairs =
+          columnMap.parameterCols.length < columnMap.typeCols.length
+              ? columnMap.parameterCols.length
+              : columnMap.typeCols.length;
 
       for (var i = 0; i < maxPairs; i++) {
         final paramName = _getCell(row, columnMap.parameterCols[i]);
