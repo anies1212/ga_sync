@@ -73,13 +73,18 @@ class _GoRouteVisitor extends RecursiveAstVisitor<void> {
     String? description;
     String? screenClass;
 
-    // Look for @ga_description comment
+    // Look for @ga_description and @ga_screen_class comments
     final precedingComments = _findPrecedingComment(node);
     if (precedingComments != null) {
       final descMatch =
           RegExp(r'@ga_description:\s*(.+)').firstMatch(precedingComments);
       if (descMatch != null) {
         description = descMatch.group(1)?.trim();
+      }
+      final screenClassMatch =
+          RegExp(r'@ga_screen_class:\s*(.+)').firstMatch(precedingComments);
+      if (screenClassMatch != null) {
+        screenClass = screenClassMatch.group(1)?.trim();
       }
     }
 
@@ -94,7 +99,8 @@ class _GoRouteVisitor extends RecursiveAstVisitor<void> {
           case 'name':
             name = _extractStringValue(value);
           case 'builder' || 'pageBuilder':
-            screenClass = _extractScreenClass(value);
+            // コメントで指定されていない場合のみbuilderから抽出
+            screenClass ??= _extractScreenClass(value);
         }
       }
     }
