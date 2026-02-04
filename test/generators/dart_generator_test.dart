@@ -20,7 +20,7 @@ void main() {
 
     test('generates event class correctly', () {
       final events = [
-        EventDefinition(
+        const EventDefinition(
           eventName: 'button_click',
           parameters: [
             EventParameter(name: 'button_id', type: 'string'),
@@ -41,8 +41,8 @@ void main() {
 
     test('generates enum correctly', () {
       final events = [
-        EventDefinition(eventName: 'event_one', parameters: []),
-        EventDefinition(eventName: 'event_two', parameters: []),
+        const EventDefinition(eventName: 'event_one', parameters: []),
+        const EventDefinition(eventName: 'event_two', parameters: []),
       ];
 
       final code = generator.generate(events);
@@ -54,7 +54,7 @@ void main() {
 
     test('generates extension methods correctly', () {
       final events = [
-        EventDefinition(eventName: 'test_event', parameters: []),
+        const EventDefinition(eventName: 'test_event', parameters: []),
       ];
 
       final code = generator.generate(events);
@@ -65,7 +65,7 @@ void main() {
 
     test('generates multiple parameter types correctly', () {
       final events = [
-        EventDefinition(
+        const EventDefinition(
           eventName: 'complex_event',
           parameters: [
             EventParameter(name: 'str_param', type: 'string'),

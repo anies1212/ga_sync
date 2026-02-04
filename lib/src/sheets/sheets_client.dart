@@ -34,7 +34,7 @@ class SheetsClient {
     final credentialsPath =
         Platform.environment['GOOGLE_APPLICATION_CREDENTIALS'];
     if (credentialsPath == null || credentialsPath.isEmpty) {
-      throw SheetsException(
+      throw const SheetsException(
         'GOOGLE_APPLICATION_CREDENTIALS environment variable is not set',
       );
     }

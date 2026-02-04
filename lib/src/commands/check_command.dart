@@ -46,7 +46,8 @@ class CheckCommand {
 
       if (!outputFile.existsSync()) {
         stderr.writeln(
-            'Error: Generated file does not exist: ${p.normalize(outputPath)}');
+          'Error: Generated file does not exist: ${p.normalize(outputPath)}',
+        );
         stderr.writeln('Run: ga_sync generate events');
         return false;
       }

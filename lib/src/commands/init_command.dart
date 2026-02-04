@@ -10,7 +10,7 @@ class InitCommand {
     final file = File(configPath);
 
     if (file.existsSync() && !force) {
-      throw InitException(
+      throw const InitException(
         'Config file already exists: $configPath\n'
         'Use --force option to overwrite.',
       );
@@ -23,7 +23,8 @@ class InitCommand {
     stdout.writeln('');
     stdout.writeln('Next steps:');
     stdout.writeln(
-        '1. Create a service account in Google Cloud Console and download JSON key');
+      '1. Create a service account in Google Cloud Console and download JSON key',
+    );
     stdout.writeln('2. Place credentials.json in project root');
     stdout.writeln('3. Set spreadsheet.id in ga_sync.yaml');
     stdout.writeln('4. Run: ga_sync generate events');

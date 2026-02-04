@@ -54,28 +54,34 @@ class EventsReader {
 
       // Check for duplicate event names
       if (seenNames.contains(event.eventName)) {
-        errors.add(ValidationError(
-          rowIndex: rowIndex,
-          message: 'Duplicate event name: ${event.eventName}',
-        ));
+        errors.add(
+          ValidationError(
+            rowIndex: rowIndex,
+            message: 'Duplicate event name: ${event.eventName}',
+          ),
+        );
       }
       seenNames.add(event.eventName);
 
       // Check event name format
       if (!_isValidSnakeCase(event.eventName)) {
-        errors.add(ValidationError(
-          rowIndex: rowIndex,
-          message: 'Event name must be snake_case: ${event.eventName}',
-        ));
+        errors.add(
+          ValidationError(
+            rowIndex: rowIndex,
+            message: 'Event name must be snake_case: ${event.eventName}',
+          ),
+        );
       }
 
       // Check parameter name format
       for (final param in event.parameters) {
         if (!_isValidSnakeCase(param.name)) {
-          errors.add(ValidationError(
-            rowIndex: rowIndex,
-            message: 'Parameter name must be snake_case: ${param.name}',
-          ));
+          errors.add(
+            ValidationError(
+              rowIndex: rowIndex,
+              message: 'Parameter name must be snake_case: ${param.name}',
+            ),
+          );
         }
       }
     }

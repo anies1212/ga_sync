@@ -36,7 +36,7 @@ class GenerateCommand {
         for (final error in errors) {
           stderr.writeln('  - $error');
         }
-        throw GenerateException('Validation failed');
+        throw const GenerateException('Validation failed');
       }
 
       // Code generation

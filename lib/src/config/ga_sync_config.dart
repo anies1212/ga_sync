@@ -21,7 +21,7 @@ class GaSyncConfig {
   static Future<GaSyncConfig> load([String? configPath]) async {
     final path = configPath ?? _findConfigFile();
     if (path == null) {
-      throw ConfigException('Config file not found. Run: ga_sync init');
+      throw const ConfigException('Config file not found. Run: ga_sync init');
     }
 
     final file = File(path);
@@ -42,7 +42,7 @@ class GaSyncConfig {
     final routesYaml = yaml['routes'] as YamlMap?;
 
     if (spreadsheetYaml == null) {
-      throw ConfigException('spreadsheet config is required');
+      throw const ConfigException('spreadsheet config is required');
     }
 
     return GaSyncConfig(
@@ -117,7 +117,7 @@ class SpreadsheetConfig {
     final credentials = yaml['credentials'] as String? ?? 'credentials.json';
 
     if (id == null || id.isEmpty) {
-      throw ConfigException('spreadsheet.id is required');
+      throw const ConfigException('spreadsheet.id is required');
     }
 
     return SpreadsheetConfig(

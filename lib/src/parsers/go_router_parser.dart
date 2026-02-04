@@ -65,7 +65,9 @@ class _GoRouteVisitor extends RecursiveAstVisitor<void> {
   }
 
   void _extractRouteFromArguments(
-      NodeList<Expression> arguments, AstNode node) {
+    NodeList<Expression> arguments,
+    AstNode node,
+  ) {
     String? path;
     String? name;
     String? description;
@@ -98,13 +100,15 @@ class _GoRouteVisitor extends RecursiveAstVisitor<void> {
     }
 
     if (path != null) {
-      routes.add(RouteDefinition(
-        path: path,
-        name: name,
-        description: description,
-        screenClass: screenClass,
-        lastUpdated: DateTime.now(),
-      ));
+      routes.add(
+        RouteDefinition(
+          path: path,
+          name: name,
+          description: description,
+          screenClass: screenClass,
+          lastUpdated: DateTime.now(),
+        ),
+      );
     }
   }
 

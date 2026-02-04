@@ -21,7 +21,7 @@ void main() {
     });
 
     test('className converts to PascalCase', () {
-      final event = EventDefinition(
+      const event = EventDefinition(
         eventName: 'point_earned',
         parameters: [],
       );
@@ -30,7 +30,7 @@ void main() {
     });
 
     test('enumValue converts to camelCase', () {
-      final event = EventDefinition(
+      const event = EventDefinition(
         eventName: 'button_click',
         parameters: [],
       );
@@ -64,30 +64,30 @@ void main() {
 
   group('EventParameter', () {
     test('fieldName converts to camelCase', () {
-      final param = EventParameter(name: 'source_screen', type: 'string');
+      const param = EventParameter(name: 'source_screen', type: 'string');
 
       expect(param.fieldName, 'sourceScreen');
     });
 
     test('dartType converts correctly', () {
       expect(
-        EventParameter(name: 'a', type: 'string').dartType,
+        const EventParameter(name: 'a', type: 'string').dartType,
         'String',
       );
       expect(
-        EventParameter(name: 'b', type: 'int').dartType,
+        const EventParameter(name: 'b', type: 'int').dartType,
         'int',
       );
       expect(
-        EventParameter(name: 'c', type: 'double').dartType,
+        const EventParameter(name: 'c', type: 'double').dartType,
         'double',
       );
       expect(
-        EventParameter(name: 'd', type: 'bool').dartType,
+        const EventParameter(name: 'd', type: 'bool').dartType,
         'bool',
       );
       expect(
-        EventParameter(name: 'e', type: 'unknown').dartType,
+        const EventParameter(name: 'e', type: 'unknown').dartType,
         'dynamic',
       );
     });

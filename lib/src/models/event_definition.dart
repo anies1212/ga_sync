@@ -16,8 +16,10 @@ class EventDefinition {
   String get className {
     return eventName
         .split('_')
-        .map((word) =>
-            word.isEmpty ? '' : '${word[0].toUpperCase()}${word.substring(1)}')
+        .map(
+          (word) =>
+              word.isEmpty ? '' : '${word[0].toUpperCase()}${word.substring(1)}',
+        )
         .join('');
   }
 
@@ -28,15 +30,19 @@ class EventDefinition {
     return parts.first +
         parts
             .skip(1)
-            .map((word) => word.isEmpty
-                ? ''
-                : '${word[0].toUpperCase()}${word.substring(1)}')
+            .map(
+              (word) => word.isEmpty
+                  ? ''
+                  : '${word[0].toUpperCase()}${word.substring(1)}',
+            )
             .join('');
   }
 
   factory EventDefinition.fromRow(List<String> row) {
     if (row.length < 3) {
-      throw FormatException('Invalid row format: expected at least 3 columns');
+      throw const FormatException(
+        'Invalid row format: expected at least 3 columns',
+      );
     }
 
     final eventName = row[0].trim();
@@ -61,10 +67,12 @@ class EventDefinition {
 
     final parameters = <EventParameter>[];
     for (var i = 0; i < paramNames.length; i++) {
-      parameters.add(EventParameter(
-        name: paramNames[i],
-        type: paramTypes[i],
-      ));
+      parameters.add(
+        EventParameter(
+          name: paramNames[i],
+          type: paramTypes[i],
+        ),
+      );
     }
 
     return EventDefinition(
@@ -95,9 +103,11 @@ class EventParameter {
     return parts.first +
         parts
             .skip(1)
-            .map((word) => word.isEmpty
-                ? ''
-                : '${word[0].toUpperCase()}${word.substring(1)}')
+            .map(
+              (word) => word.isEmpty
+                  ? ''
+                  : '${word[0].toUpperCase()}${word.substring(1)}',
+            )
             .join('');
   }
 
