@@ -1,0 +1,42 @@
+# ga_syncを使用してイベント定義の同期チェックを行うワークフロー
+# このファイルはga_syncを利用するプロジェクトにコピーして使用してください
+
+name: GA Sync Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # 手動実行
+  workflow_dispatch:
+
+env:
+  GA_SYNC_VERSION: "0.1.0"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c # v1
+        with:
+          sdk: stable
+
+      - name: Install ga_sync
+        run: dart pub global activate ga_sync
+
+      - name: Setup Google credentials
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        run: |
+          echo "$GOOGLE_CREDENTIALS" > credentials.json
+
+      - name: Check events sync
+        run: ga_sync check
+
+      - name: Cleanup credentials
+        if: always()
+        run: rm -f credentials.json

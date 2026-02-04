@@ -158,6 +158,98 @@ export GOOGLE_APPLICATION_CREDENTIALS="path/to/service-account.json"
 ga_sync generate events
 ```
 
+## GitHub Actions
+
+### セットアップ
+
+1. **GitHub Secretsを設定**
+   - `Settings > Secrets and variables > Actions` を開く
+   - `GOOGLE_CREDENTIALS` を追加（サービスアカウントJSONキーの内容）
+
+2. **ワークフローファイルをコピー**
+   - `example/github-actions/ga-sync.yaml` を `.github/workflows/` にコピー
+
+### 基本的なワークフロー（同期チェック）
+
+```yaml
+name: GA Sync Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install ga_sync
+        run: dart pub global activate ga_sync
+
+      - name: Setup credentials
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        run: echo "$GOOGLE_CREDENTIALS" > credentials.json
+
+      - name: Check events sync
+        run: ga_sync check
+
+      - name: Cleanup
+        if: always()
+        run: rm -f credentials.json
+```
+
+### 自動PRワークフロー
+
+スプレッドシートが更新されたら自動でPRを作成:
+
+```yaml
+name: GA Sync Auto Update
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 毎日9時 JST
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+
+      - run: dart pub global activate ga_sync
+
+      - name: Setup credentials
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        run: echo "$GOOGLE_CREDENTIALS" > credentials.json
+
+      - run: ga_sync generate events
+
+      - run: rm -f credentials.json
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: 'chore: GAイベント定義を更新'
+          title: 'chore: GAイベント定義を更新'
+          branch: ga-sync/update-events
+```
+
+### 必要なPermissions
+
+GitHub Actionsで自動PRを作成する場合、リポジトリ設定で以下を有効化:
+- `Settings > Actions > General > Workflow permissions`
+- `Read and write permissions` を選択
+
 ## ライセンス
 
 MIT License
