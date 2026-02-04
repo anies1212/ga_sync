@@ -1,53 +1,51 @@
-# GA Sync
+# ga_sync
 
-A CLI tool to sync Google Analytics event definitions and page paths between spreadsheets and code.
+[![Pub Version](https://img.shields.io/pub/v/ga_sync)](https://pub.dev/packages/ga_sync)
+[![CI](https://github.com/anies1212/ga_sync/actions/workflows/ci.yaml/badge.svg)](https://github.com/anies1212/ga_sync/actions/workflows/ci.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**Sync Google Analytics event definitions between Google Sheets and your codebase.**
+
+ga_sync is a CLI tool that generates type-safe Dart code from spreadsheet-managed GA event definitions, and syncs your route definitions back to the spreadsheet. Perfect for teams who manage analytics events in spreadsheets but want type-safe code.
 
 ## Features
 
-- **Events Generator** (Spreadsheet → Code): Auto-generate Dart code from spreadsheet event definitions
-- **Routes Syncer** (Code → Spreadsheet): Sync go_router route definitions to spreadsheet
+- 📊 **Spreadsheet → Code**: Generate Dart event classes from Google Sheets
+- 🛣️ **Code → Spreadsheet**: Sync go_router routes to Google Sheets
+- 🔄 **Two-way sync**: Keep spreadsheet and code always in sync
+- ✅ **Validation**: Catch errors before they reach production
+- 🤖 **CI/CD Ready**: Auto-generate PRs when spreadsheet changes
 
-## Installation
+## Quick Start
+
+### Installation
 
 ```bash
 dart pub global activate ga_sync
 ```
 
-Or add to `pubspec.yaml`:
+### Setup
 
-```yaml
-dev_dependencies:
-  ga_sync: ^0.1.0
-```
-
-## Setup
-
-### 1. Google Cloud Configuration
-
-1. Create a project in [Google Cloud Console](https://console.cloud.google.com/)
-2. Enable Google Sheets API
-3. Create a service account and download JSON key
-4. Share the spreadsheet with the service account email
-
-### 2. Initialize
+1. **Create a Google Cloud service account** and download the JSON key
+2. **Share your spreadsheet** with the service account email
+3. **Initialize config**:
 
 ```bash
 ga_sync init
 ```
 
-This creates `ga_sync.yaml`:
+4. **Edit `ga_sync.yaml`**:
 
 ```yaml
 version: 1
 
 spreadsheet:
-  id: "YOUR_SPREADSHEET_ID"
+  id: "YOUR_SPREADSHEET_ID"  # From spreadsheet URL
   credentials: "credentials.json"
 
 events:
   sheet_name: "Events"
   output: "lib/analytics/ga_events.g.dart"
-  language: dart
 
 routes:
   sheet_name: "Routes"
@@ -56,57 +54,59 @@ routes:
   parser: go_router
 ```
 
-## Usage
-
-### Generate Event Code
-
-Generate Dart code from the "Events" sheet:
+5. **Generate code**:
 
 ```bash
 ga_sync generate events
 ```
 
-**Spreadsheet format:**
+## Usage
+
+### Spreadsheet Format
+
+Your "Events" sheet should have this structure:
 
 | event_name | parameters | param_types | description | category |
 |------------|------------|-------------|-------------|----------|
-| point_earned | cv_id,source_screen | string,string | When points earned | conversion |
-| button_click | button_id,screen_name | string,string | When button clicked | interaction |
+| screen_view | screen_name,screen_class | string,string | Screen viewed | navigation |
+| button_click | button_id,screen_name | string,string | Button clicked | interaction |
+| purchase | item_id,price,currency | string,double,string | Purchase completed | conversion |
 
-**Generated code:**
+### Generated Code
 
 ```dart
 // lib/analytics/ga_events.g.dart
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
 enum GaEventName {
-  pointEarned,
+  screenView,
   buttonClick,
+  purchase,
 }
 
-class PointEarnedEvent {
-  final String cvId;
-  final String sourceScreen;
+class ScreenViewEvent {
+  final String screenName;
+  final String screenClass;
 
-  const PointEarnedEvent({
-    required this.cvId,
-    required this.sourceScreen,
+  const ScreenViewEvent({
+    required this.screenName,
+    required this.screenClass,
   });
 
+  String get eventName => 'screen_view';
+
   Map<String, dynamic> toParameters() => {
-    'cv_id': cvId,
-    'source_screen': sourceScreen,
+    'screen_name': screenName,
+    'screen_class': screenClass,
   };
 }
+
+// ... more event classes
 ```
 
-### Sync Routes
+### Route Sync
 
-Sync go_router route definitions to spreadsheet:
-
-```bash
-ga_sync sync routes
-```
-
-**Source code:**
+Add `@ga_description` comments to your routes:
 
 ```dart
 GoRoute(
@@ -117,77 +117,49 @@ GoRoute(
 ),
 ```
 
-**Spreadsheet output:**
-
-| path | name | description | screen_class | last_updated |
-|------|------|-------------|--------------|--------------|
-| /home | home | Home screen | HomeScreen | 2024-02-04 |
-
-### CI Check
-
-Check if generated code is up to date (for CI):
+Then sync to spreadsheet:
 
 ```bash
-ga_sync check
+ga_sync sync routes
 ```
-
-Returns exit code 1 if there are differences.
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
 | `ga_sync init` | Create config file |
-| `ga_sync generate events` | Generate event code |
+| `ga_sync generate events` | Generate Dart code from spreadsheet |
 | `ga_sync sync routes` | Sync routes to spreadsheet |
-| `ga_sync sync all` | Run both generate events and sync routes |
-| `ga_sync check` | Check if generated code is up to date |
+| `ga_sync sync all` | Run both commands |
+| `ga_sync check` | Check if code is up to date (for CI) |
 
-**Options:**
+### Options
 
-- `--dry-run, -d`: Preview only, don't execute
-- `--config, -c`: Specify config file path
-- `--force, -f`: Overwrite existing files (for init)
+- `--dry-run, -d` - Preview changes without writing
+- `--config, -c` - Specify config file path
+- `--force, -f` - Overwrite existing files (init only)
 
-## Environment Variables
+## GitHub Actions Integration
 
-For CI/CD, specify credentials via environment variable:
+Automatically create PRs when your spreadsheet is updated.
 
-```bash
-export GOOGLE_APPLICATION_CREDENTIALS="path/to/service-account.json"
-ga_sync generate events
-```
+### 1. Add Secret
 
-## GitHub Actions
+Go to `Settings > Secrets and variables > Actions` and add:
+- **Name**: `GOOGLE_CREDENTIALS`
+- **Value**: Your service account JSON key content
 
-### Quick Start
+### 2. Add Workflow
 
-1. **Add GitHub Secret**
-   - Go to `Settings > Secrets and variables > Actions`
-   - Add `GOOGLE_CREDENTIALS` with your service account JSON key content
-
-2. **Copy workflow file**
-   ```bash
-   cp example/github-actions/ga-sync.yaml .github/workflows/
-   ```
-
-3. **Enable workflow permissions**
-   - Go to `Settings > Actions > General > Workflow permissions`
-   - Select "Read and write permissions"
-
-### How it works
-
-1. Trigger the workflow (manually via workflow_dispatch, or on schedule)
-2. ga_sync generates event definitions from spreadsheet
-3. If there are changes, a PR is automatically created
-
-### Example workflow
+Create `.github/workflows/ga-sync.yaml`:
 
 ```yaml
 name: GA Sync
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Manual trigger
+  # schedule:
+  #   - cron: '0 0 * * *'  # Or daily
 
 jobs:
   sync:
@@ -199,9 +171,7 @@ jobs:
       - run: dart pub global activate ga_sync
 
       - name: Setup credentials
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-        run: echo "$GOOGLE_CREDENTIALS" > credentials.json
+        run: echo "${{ secrets.GOOGLE_CREDENTIALS }}" > credentials.json
 
       - run: ga_sync generate events
       - run: rm -f credentials.json
@@ -213,8 +183,46 @@ jobs:
           branch: ga-sync/update-events
 ```
 
-See `example/github-actions/ga-sync.yaml` for the full example.
+### 3. Enable Permissions
+
+Go to `Settings > Actions > General > Workflow permissions` and select **Read and write permissions**.
+
+## Supported Types
+
+| Spreadsheet Type | Dart Type |
+|-----------------|-----------|
+| `string` | `String` |
+| `int`, `integer` | `int` |
+| `double`, `float`, `number` | `double` |
+| `bool`, `boolean` | `bool` |
+| `map` | `Map<String, dynamic>` |
+| `list` | `List<dynamic>` |
+
+## Environment Variables
+
+For CI/CD, you can use environment variables instead of config file:
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/credentials.json"
+ga_sync generate events
+```
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) first.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [googleapis](https://pub.dev/packages/googleapis) - Google APIs client
+- [code_builder](https://pub.dev/packages/code_builder) - Dart code generation
+- [analyzer](https://pub.dev/packages/analyzer) - Dart code analysis

@@ -1,9 +1,18 @@
 name: ga_sync
 description: >-
-  A CLI tool to sync Google Analytics event definitions and page paths
-  between spreadsheets and code.
+  Sync Google Analytics event definitions between Google Sheets and your codebase.
+  Generate type-safe Dart code from spreadsheet-managed GA events.
 version: 0.1.0
 repository: https://github.com/anies1212/ga_sync
+homepage: https://github.com/anies1212/ga_sync
+documentation: https://github.com/anies1212/ga_sync#readme
+
+topics:
+  - analytics
+  - google-analytics
+  - code-generation
+  - cli
+  - spreadsheet
 
 environment:
   sdk: ^3.0.0
@@ -18,15 +27,11 @@ dependencies:
   dart_style: ^2.3.0
   analyzer: ^6.0.0
   http: ^1.2.0
-  json_annotation: ^4.8.0
 
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.0
-  build_runner: ^2.4.0
-  json_serializable: ^6.7.0
   mockito: ^5.4.0
-  build_verify: ^3.1.0
 
 executables:
   ga_sync: ga_sync
