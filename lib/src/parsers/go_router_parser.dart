@@ -64,7 +64,8 @@ class _GoRouteVisitor extends RecursiveAstVisitor<void> {
     _extractRouteFromArguments(arguments, node);
   }
 
-  void _extractRouteFromArguments(NodeList<Expression> arguments, AstNode node) {
+  void _extractRouteFromArguments(
+      NodeList<Expression> arguments, AstNode node) {
     String? path;
     String? name;
     String? description;
@@ -73,7 +74,8 @@ class _GoRouteVisitor extends RecursiveAstVisitor<void> {
     // Look for @ga_description comment
     final precedingComments = _findPrecedingComment(node);
     if (precedingComments != null) {
-      final descMatch = RegExp(r'@ga_description:\s*(.+)').firstMatch(precedingComments);
+      final descMatch =
+          RegExp(r'@ga_description:\s*(.+)').firstMatch(precedingComments);
       if (descMatch != null) {
         description = descMatch.group(1)?.trim();
       }

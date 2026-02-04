@@ -16,9 +16,8 @@ class EventDefinition {
   String get className {
     return eventName
         .split('_')
-        .map((word) => word.isEmpty
-            ? ''
-            : '${word[0].toUpperCase()}${word.substring(1)}')
+        .map((word) =>
+            word.isEmpty ? '' : '${word[0].toUpperCase()}${word.substring(1)}')
         .join('');
   }
 

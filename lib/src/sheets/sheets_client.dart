@@ -31,7 +31,8 @@ class SheetsClient {
 
   /// Create client from environment variable
   static Future<SheetsClient> fromEnvironment() async {
-    final credentialsPath = Platform.environment['GOOGLE_APPLICATION_CREDENTIALS'];
+    final credentialsPath =
+        Platform.environment['GOOGLE_APPLICATION_CREDENTIALS'];
     if (credentialsPath == null || credentialsPath.isEmpty) {
       throw SheetsException(
         'GOOGLE_APPLICATION_CREDENTIALS environment variable is not set',

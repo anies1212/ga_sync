@@ -22,7 +22,8 @@ class EventsReader {
     }
 
     // Skip header row
-    final rows = data.skip(1).where((row) => row.isNotEmpty && row[0].isNotEmpty);
+    final rows =
+        data.skip(1).where((row) => row.isNotEmpty && row[0].isNotEmpty);
 
     final events = <EventDefinition>[];
     var rowIndex = 2; // 1-indexed, starting after header

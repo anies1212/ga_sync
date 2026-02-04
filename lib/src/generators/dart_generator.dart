@@ -143,7 +143,8 @@ class DartGenerator {
   Code _buildRawNameBody(List<EventDefinition> events) {
     final buffer = StringBuffer('return switch (this) {\n');
     for (final event in events) {
-      buffer.writeln("  GaEventName.${event.enumValue} => '${event.eventName}',");
+      buffer
+          .writeln("  GaEventName.${event.enumValue} => '${event.eventName}',");
     }
     buffer.write('};');
 
