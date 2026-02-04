@@ -42,13 +42,14 @@ version: 1
 spreadsheet:
   id: "YOUR_SPREADSHEET_ID"  # From spreadsheet URL
   credentials: "credentials.json"
+  header_language: "ja"  # "en" or "ja"
 
 events:
-  sheet_name: "Events"
+  sheet_name: "イベント"  # or "Events"
   output: "lib/analytics/ga_events.g.dart"
 
 routes:
-  sheet_name: "Routes"
+  sheet_name: "ページパス"  # or "Routes"
   source:
     - "lib/router/app_router.dart"
   parser: go_router
@@ -64,13 +65,33 @@ ga_sync generate events
 
 ### Spreadsheet Format
 
-Your "Events" sheet should have this structure:
+ga_sync supports two spreadsheet formats for event definitions:
 
-| event_name | parameters | param_types | description | category |
-|------------|------------|-------------|-------------|----------|
+#### Format 1: Paired columns (Recommended for dropdown support)
+
+Best for teams using dropdown menus in spreadsheets.
+
+**English headers:**
+| event_name | param1 | type1 | param2 | type2 | param3 | type3 | description | category |
+|------------|--------|-------|--------|-------|--------|-------|-------------|----------|
+| screen_view | screen_name | string | screen_class | string | | | Screen viewed | navigation |
+| purchase | item_id | string | price | double | currency | string | Purchase completed | conversion |
+
+**Japanese headers:**
+| イベント名 | パラメータ1 | 型1 | パラメータ2 | 型2 | パラメータ3 | 型3 | 説明 | カテゴリ |
+|-----------|------------|-----|------------|-----|------------|-----|------|---------|
+| screen_view | screen_name | 文字列 | screen_class | 文字列 | | | 画面表示 | ナビゲーション |
+
+- Add more parameter/type column pairs as needed (パラメータ4, 型4, ...)
+- Empty cells are automatically skipped
+- Each type column can use dropdown selections
+
+#### Format 2: Comma-separated (Legacy)
+
+| event_name | parameters | parameter_types | description | category |
+|------------|------------|-----------------|-------------|----------|
 | screen_view | screen_name,screen_class | string,string | Screen viewed | navigation |
 | button_click | button_id,screen_name | string,string | Button clicked | interaction |
-| purchase | item_id,price,currency | string,double,string | Purchase completed | conversion |
 
 ### Generated Code
 
@@ -106,16 +127,20 @@ class ScreenViewEvent {
 
 ### Route Sync
 
-Add `@ga_description` comments to your routes:
+Add `@ga_description` and `@ga_screen_class` comments to your routes:
 
 ```dart
+// @ga_screen_class: ホーム
+// @ga_description: Home screen
 GoRoute(
   path: '/home',
   name: 'home',
-  // @ga_description: Home screen
   builder: (context, state) => const HomeScreen(),
 ),
 ```
+
+- `@ga_screen_class`: Custom screen class name (takes priority over auto-detected class)
+- `@ga_description`: Description for the route
 
 Then sync to spreadsheet:
 
@@ -189,14 +214,16 @@ Go to `Settings > Actions > General > Workflow permissions` and select **Read an
 
 ## Supported Types
 
-| Spreadsheet Type | Dart Type |
-|-----------------|-----------|
-| `string` | `String` |
-| `int`, `integer` | `int` |
-| `double`, `float`, `number` | `double` |
-| `bool`, `boolean` | `bool` |
-| `map` | `Map<String, dynamic>` |
-| `list` | `List<dynamic>` |
+Both English and Japanese type names are supported:
+
+| English | Japanese | Dart Type |
+|---------|----------|-----------|
+| `string` | `文字列`, `テキスト` | `String` |
+| `int`, `integer` | `整数`, `数値` | `int` |
+| `double`, `float`, `number` | `小数` | `double` |
+| `bool`, `boolean` | `真偽値`, `フラグ` | `bool` |
+| `map` | `マップ`, `辞書` | `Map<String, dynamic>` |
+| `list` | `リスト`, `配列` | `List<dynamic>` |
 
 ## Environment Variables
 

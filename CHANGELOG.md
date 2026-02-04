@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-02-04
+
+### Changed
+
+- Updated README with comprehensive documentation
+  - Two spreadsheet formats (paired columns and legacy)
+  - Japanese headers and type names support
+  - `@ga_screen_class` comment annotation
+
 ## [0.1.4] - 2026-02-04
 
 ### Added
