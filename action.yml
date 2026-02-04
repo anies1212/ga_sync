@@ -1,0 +1,59 @@
+name: GA Sync
+description: Sync Google Analytics event definitions between Google Sheets and your codebase
+author: anies1212
+
+branding:
+  icon: refresh-cw
+  color: blue
+
+inputs:
+  command:
+    description: 'Command to run (generate events, sync routes, sync all, check)'
+    required: true
+  credentials_base64:
+    description: 'Base64-encoded Google service account JSON key'
+    required: true
+  config:
+    description: 'Path to config file (default: ga_sync.yaml)'
+    required: false
+    default: ''
+  dry_run:
+    description: 'Run in dry-run mode (no actual changes)'
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Dart
+      uses: dart-lang/setup-dart@21e68f4d54916e6c2f68f8c290b2aed9b02cbd3e # v1
+
+    - name: Install ga_sync
+      shell: bash
+      run: dart pub global activate ga_sync
+
+    - name: Setup Google credentials
+      shell: bash
+      run: echo "${{ inputs.credentials_base64 }}" | base64 -d > credentials.json
+
+    - name: Run ga_sync
+      shell: bash
+      run: |
+        COMMAND="${{ inputs.command }}"
+        CONFIG_FLAG=""
+        DRY_RUN_FLAG=""
+
+        if [ -n "${{ inputs.config }}" ]; then
+          CONFIG_FLAG="--config ${{ inputs.config }}"
+        fi
+
+        if [ "${{ inputs.dry_run }}" = "true" ]; then
+          DRY_RUN_FLAG="--dry-run"
+        fi
+
+        dart pub global run ga_sync $COMMAND $CONFIG_FLAG $DRY_RUN_FLAG
+
+    - name: Cleanup credentials
+      if: always()
+      shell: bash
+      run: rm -f credentials.json
