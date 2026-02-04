@@ -87,13 +87,10 @@ class _GoRouteVisitor extends RecursiveAstVisitor<void> {
         switch (argName) {
           case 'path':
             path = _extractStringValue(value);
-            break;
           case 'name':
             name = _extractStringValue(value);
-            break;
           case 'builder' || 'pageBuilder':
             screenClass = _extractScreenClass(value);
-            break;
         }
       }
     }

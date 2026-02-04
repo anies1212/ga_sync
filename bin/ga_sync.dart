@@ -55,7 +55,6 @@ Future<void> _runCommand(ArgResults results) async {
       await InitCommand().run(
         force: command['force'] as bool,
       );
-      break;
 
     case 'generate':
       final subCommand = command.command;
@@ -68,7 +67,6 @@ Future<void> _runCommand(ArgResults results) async {
         configPath: command['config'] as String?,
         dryRun: subCommand['dry-run'] as bool,
       );
-      break;
 
     case 'sync':
       final subCommand = command.command;
@@ -87,7 +85,6 @@ Future<void> _runCommand(ArgResults results) async {
             configPath: configPath,
             dryRun: dryRun,
           );
-          break;
         case 'all':
           await GenerateCommand().run(
             configPath: configPath,
@@ -97,9 +94,7 @@ Future<void> _runCommand(ArgResults results) async {
             configPath: configPath,
             dryRun: dryRun,
           );
-          break;
       }
-      break;
 
     case 'check':
       final success = await CheckCommand().run(
@@ -108,7 +103,6 @@ Future<void> _runCommand(ArgResults results) async {
       if (!success) {
         exitCode = 1;
       }
-      break;
 
     default:
       stderr.writeln('Unknown command: ${command.name}');
