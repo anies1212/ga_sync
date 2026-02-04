@@ -171,8 +171,14 @@ Automatically create PRs when your spreadsheet is updated.
 ### 1. Add Secret
 
 Go to `Settings > Secrets and variables > Actions` and add:
-- **Name**: `GOOGLE_CREDENTIALS`
-- **Value**: Your service account JSON key content
+- **Name**: `GOOGLE_CREDENTIALS_BASE64`
+- **Value**: Base64-encoded service account JSON key
+
+```bash
+# Encode your credentials
+base64 -i credentials.json | pbcopy  # macOS
+base64 -w 0 credentials.json         # Linux
+```
 
 ### 2. Add Workflow
 
@@ -186,27 +192,49 @@ on:
   # schedule:
   #   - cron: '0 0 * * *'  # Or daily
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
 
-      - run: dart pub global activate ga_sync
+      - name: Sync GA definitions
+        uses: anies1212/ga_sync@v0.1.5
+        with:
+          command: sync all
+          credentials_base64: ${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}
 
-      - name: Setup credentials
-        run: echo "${{ secrets.GOOGLE_CREDENTIALS }}" > credentials.json
-
-      - run: ga_sync generate events
-      - run: rm -f credentials.json
+      - name: Check for changes
+        id: changes
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - uses: peter-evans/create-pull-request@v7
+        if: steps.changes.outputs.changed == 'true'
         with:
-          commit-message: 'chore: update GA event definitions'
-          title: 'chore: update GA event definitions'
+          commit-message: 'chore: sync GA definitions'
+          title: 'chore: sync GA definitions'
           branch: ga-sync/update-events
+          delete-branch: true
 ```
+
+### Action Inputs
+
+| Input | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `command` | Yes | - | Command to run (`generate events`, `sync routes`, `sync all`, `check`) |
+| `credentials_base64` | Yes | - | Base64-encoded Google service account JSON key |
+| `config` | No | `ga_sync.yaml` | Path to config file |
+| `dry_run` | No | `false` | Run in dry-run mode (no actual changes) |
 
 ### 3. Enable Permissions
 
