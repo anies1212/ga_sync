@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:_fe_analyzer_shared/src/scanner/token.dart' show CommentToken;
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/token.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 
 import '../models/route_definition.dart';
@@ -149,12 +149,10 @@ class _GoRouteVisitor extends RecursiveAstVisitor<void> {
     final token = node.beginToken;
     final comments = <String>[];
 
-    var comment = token.precedingComments;
+    Token? comment = token.precedingComments;
     while (comment != null) {
       comments.add(comment.lexeme);
-      final next = comment.next;
-      if (next == null || next is! CommentToken) break;
-      comment = next;
+      comment = comment.next;
     }
 
     if (comments.isEmpty) return null;
