@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-02-04
+
+### Added
+
+- New spreadsheet format support: paired parameter/type columns
+  - Header format: イベント名, パラメータ1, 型1, パラメータ2, 型2, ..., 説明, カテゴリ
+  - Supports unlimited number of parameters
+  - Empty parameter cells are automatically skipped
+  - Dropdown selections work seamlessly
+- Backward compatible with legacy comma-separated format
+
 ## [0.1.3] - 2026-02-04
 
 ### Added
