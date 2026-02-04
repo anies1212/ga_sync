@@ -1,5 +1,6 @@
 # Check if GA event definitions are in sync
-# Copy this file to your project's .github/workflows/ directory
+# NOTE: This workflow is for projects that USE ga_sync, not for ga_sync itself.
+# Copy this file to your project's .github/workflows/ directory after ga_sync is published to pub.dev.
 
 name: GA Sync Check
 
@@ -9,9 +10,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-
-env:
-  GA_SYNC_VERSION: "0.1.0"
 
 jobs:
   check:
@@ -26,16 +24,31 @@ jobs:
         with:
           sdk: stable
 
-      - name: Install ga_sync
-        run: dart pub global activate ga_sync
+      # For published package, use:
+      # - name: Install ga_sync
+      #   run: dart pub global activate ga_sync
+
+      # For development/testing, use local build:
+      - name: Install ga_sync (from source)
+        run: dart pub global activate --source path .
 
       - name: Setup Google credentials
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        if: env.GOOGLE_CREDENTIALS != ''
         run: echo "$GOOGLE_CREDENTIALS" > credentials.json
 
       - name: Check events sync
+        if: env.GOOGLE_CREDENTIALS != ''
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         run: ga_sync check
+
+      - name: Skip check (no credentials)
+        if: env.GOOGLE_CREDENTIALS == ''
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        run: echo "Skipping check - GOOGLE_CREDENTIALS not configured"
 
       - name: Cleanup credentials
         if: always()

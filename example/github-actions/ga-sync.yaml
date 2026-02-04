@@ -9,6 +9,9 @@
 #
 # Required permissions:
 # - Settings > Actions > General > Workflow permissions > "Read and write permissions"
+#
+# NOTE: This workflow requires ga_sync to be published to pub.dev.
+# Until then, you can use: dart pub global activate --source git https://github.com/anies1212/ga_sync.git
 
 name: GA Sync
 
@@ -33,8 +36,13 @@ jobs:
         with:
           sdk: stable
 
+      # Option 1: From pub.dev (after published)
+      # - name: Install ga_sync
+      #   run: dart pub global activate ga_sync
+
+      # Option 2: From GitHub (before pub.dev publish)
       - name: Install ga_sync
-        run: dart pub global activate ga_sync
+        run: dart pub global activate --source git https://github.com/anies1212/ga_sync.git
 
       - name: Setup Google credentials
         env:

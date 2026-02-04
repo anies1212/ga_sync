@@ -29,7 +29,7 @@ jobs:
       - name: Run tests
         run: dart test
 
-  dry-run:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,3 +44,6 @@ jobs:
 
       - name: Verify CLI builds
         run: dart compile exe bin/ga_sync.dart -o ga_sync
+
+      - name: Test CLI help
+        run: dart run bin/ga_sync.dart --help
